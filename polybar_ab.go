@@ -216,7 +216,7 @@ func polybar_out(val float64, state battery.State, timeRem string) {
 			if flagdebug {
 				fmt.Printf("Polybar discharge pict: %v\n", int(level))
 			}
-			fmt.Printf("%%{F#%v} %s %%{F#%v}%.2f%% %.2f%s\n", color, bat_icons[int(level)], color_default, val, timeRem)
+			fmt.Printf("%%{F#%v} %s %%{F#%v}%.2f%% %s\n", color, bat_icons[int(level)], color_default, val, timeRem)
 		}
 	}
 }
@@ -301,10 +301,15 @@ func timeRemaining(dur float64) (remain string) {
 		return
 	}
 	d, _ := time.ParseDuration(fmt.Sprintf("%fh", dur))
+	if flagdebug {
+		fmt.Printf("Duration %f\n", dur)
+	}
 	if d.Hours() < 0 {
-		remain = fmt.Sprintf("%s %dm ", clock_img, int64(d.Minutes()))
+		remain = fmt.Sprintf("%s %d", clock_img, int64(d.Minutes()))
 	} else {
-		remain = fmt.Sprintf("%s %dh %dm", clock_img, int64(d.Hours()), int64(d.Minutes()))
+		hours := int64(d.Hours())
+		minutes := int64(math.Floor((d.Hours() - float64(hours)) * 60))
+		remain = fmt.Sprintf("%s %dh %dm", clock_img, hours, minutes)
 	}
 
 	return remain
